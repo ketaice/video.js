@@ -149,6 +149,14 @@ module.exports = function(grunt) {
     },
     dist: {},
     watch: {
+      novtt: {
+        files: ['build/temp/video.js'],
+        tasks: ['concat:novtt']
+      },
+      minify: {
+        files: ['build/temp/video.js'],
+        tasks: ['uglify']
+      },
       skin: {
         files: ['src/css/**/*'],
         tasks: ['sass', 'wrapcodepoints']
@@ -188,7 +196,7 @@ module.exports = function(grunt) {
       minify: {
         expand: true,
         cwd: 'build/temp/',
-        src: ['video-js.css'],
+        src: ['video-js.css', 'alt/video-js-cdn.css'],
         dest: 'build/temp/',
         ext: '.min.css'
       }
@@ -196,7 +204,8 @@ module.exports = function(grunt) {
     sass: {
       build: {
         files: {
-          'build/temp/video-js.css': 'src/css/vjs.scss'
+          'build/temp/video-js.css': 'src/css/vjs.scss',
+          'build/temp/alt/video-js-cdn.css': 'src/css/vjs-cdn.scss'
         }
       }
     },
@@ -396,7 +405,7 @@ module.exports = function(grunt) {
         options: {
           separator: '\n',
         },
-        src: ['build/temp/video.js', 'node_modules/vtt.js/dist/vtt.js'],
+        src: ['build/temp/video.js', 'node_modules/videojs-vtt.js/dist/vtt.js'],
         dest: 'build/temp/video.js',
       },
     },
