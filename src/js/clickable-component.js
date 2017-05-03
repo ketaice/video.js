@@ -51,6 +51,7 @@ class ClickableComponent extends Component {
    */
   createEl(tag = 'div', props = {}, attributes = {}) {
     props = assign({
+      innerHTML: '<span aria-hidden="true" class="vjs-icon-placeholder"></span>',
       className: this.buildCSSClass(),
       tabIndex: 0
     }, props);
@@ -108,9 +109,8 @@ class ClickableComponent extends Component {
    * @param {Element} [el=this.el()]
    *        Element to set the title on.
    *
-   * @return {string|ClickableComponent}
+   * @return {string}
    *         - The control text when getting
-   *         - Returns itself when setting; method can be chained.
    */
   controlText(text, el = this.el()) {
     if (!text) {
@@ -121,9 +121,10 @@ class ClickableComponent extends Component {
 
     this.controlText_ = text;
     this.controlTextEl_.innerHTML = localizedText;
-    el.setAttribute('title', localizedText);
-
-    return this;
+    if (!this.nonIconControl) {
+      // Set title attribute if only an icon is shown
+      el.setAttribute('title', localizedText);
+    }
   }
 
   /**
@@ -138,9 +139,6 @@ class ClickableComponent extends Component {
 
   /**
    * Enable this `Component`s element.
-   *
-   * @return {ClickableComponent}
-   *         Returns itself; method can be chained.
    */
   enable() {
     this.removeClass('vjs-disabled');
@@ -152,14 +150,10 @@ class ClickableComponent extends Component {
     this.on('click', this.handleClick);
     this.on('focus', this.handleFocus);
     this.on('blur', this.handleBlur);
-    return this;
   }
 
   /**
    * Disable this `Component`s element.
-   *
-   * @return {ClickableComponent}
-   *         Returns itself; method can be chained.
    */
   disable() {
     this.addClass('vjs-disabled');
@@ -171,7 +165,6 @@ class ClickableComponent extends Component {
     this.off('click', this.handleClick);
     this.off('focus', this.handleFocus);
     this.off('blur', this.handleBlur);
-    return this;
   }
 
   /**
@@ -226,7 +219,7 @@ class ClickableComponent extends Component {
     // Support Space (32) or Enter (13) key operation to fire a click event
     if (event.which === 32 || event.which === 13) {
       event.preventDefault();
-      this.handleClick(event);
+      this.trigger('click');
     } else if (super.handleKeyPress) {
 
       // Pass keypress handling up for unsupported keys
